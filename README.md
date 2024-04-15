@@ -1,7 +1,5 @@
 # Association Tables
 
-
-
 How you choose to design the tables of your database is called the **database schema** and it is a crucial step in planning your application. Think of it as the wireframe for your data.
 
 In this lesson, we'll learn about a few ways to organize your data and how to represent that organization through ERDs.
@@ -10,19 +8,27 @@ In this lesson, we'll learn about a few ways to organize your data and how to re
 - [Terms](#terms)
 - [How should I create my database?](#how-should-i-create-my-database)
 - [Two Tables and Foreign Keys](#two-tables-and-foreign-keys)
-	- [Entity Relation Diagrams](#entity-relation-diagrams)
 - [Association SQL Queries](#association-sql-queries)
+	- [Setup](#setup)
+	- [Some Questions To Answer](#some-questions-to-answer)
+- [Entity Relation Diagrams \& Many To Many Relationships](#entity-relation-diagrams--many-to-many-relationships)
 
 ## Terms
 
+* **Schema Design** - the process of planning the structure and relationships of the tables in a database.
+* **Primary Key** - a column in a table that uniquely identifies each row in the table.
+* **Foreign Key** - a column in a table that references the primary key of another table.
 * **One-to-Many** - a relationship between two tables in which instances in one table can be referenced by many instances in another table.
+* `JOIN` - A SQL statement that combines the columns of two tables.
+* **Entity Relationship Diagram** - a diagram that illustrates the relationships between tables.
 * **Many-to-Many** - a relationship between two tables in which the instances of each table can be referenced by many instances in the other table.
+* **Association/Junction Table** - a table used to create a many-to-many relationship using two foreign keys to reference two tables.
 
 ## How should I create my database?
 
 Imagine that you are building a social network app for people and their pets. Users can sign up and add pets to their accounts. 
 
-To account for all of the data, you might make a single table:
+To account for all of the data, you might make a single table that stores each instance of a user-pet relationship:
 
 **SQL:**
 ```sql
@@ -48,7 +54,6 @@ CREATE TABLE all_data (
 | 8   | Carmen Salas   | Frida      | cat  |
 
 **<details><summary>Q: What are the issues with storing the data in this way?</summary>**
-	* You may end up with holes in your database (such as user ben who doesn't have any pets yet)
 	* There is a lot of duplicate data in the `owner_name` column
 </details>
 
@@ -56,7 +61,22 @@ CREATE TABLE all_data (
 
 Instead of storing all data in a single table, we can break up the table into two:
 1. A `people` table to store data about people
-2. A `pets` table to store data about pets with a _reference_ to the primary key of a person in the `people` table:
+2. A `pets` table to store data about pets
+   * The `pets` table has an `owner_id` column that *references* the **primary key** the `people` table.
+   * The `pets.owner_id` column is known as a **foreign key**.
+
+```sql
+CREATE TABLE people (
+	id SERIAL PRIMARY KEY,
+	name TEXT NOT NULL
+);
+CREATE TABLE pets (
+	id SERIAL PRIMARY KEY,
+	name TEXT NOT NULL, 
+	type TEXT NOT NULL, 
+	owner_id INTEGER REFERENCES people --foreign key
+);
+```
 
 **`people` Table:**
 | id  | name           |
@@ -77,14 +97,11 @@ Instead of storing all data in a single table, we can break up the table into tw
 | 6   | Pon Juablo | cat  | 2        |
 | 7   | Kora       | cat  | 1        |
 
-Now, in order for each pet to "know" who its owner is, the `pets` table needs the `owner_id` column. This column serves as a **foreign key** (a reference to the primary key of another table).
 
 **<details><summary style="color: purple">Q: What are the tradeoffs of this schema design?</summary>**
 > We no longer have duplicate data
 > It is not exactly clear anymore the name of the person who owns each pet
 </details><br>
-
-### Entity Relation Diagrams
 
 With these two tables, a **one-to-many relationship** has been formed: a person can have many pets. This is one of the most common relationships between tables in a database. Some other examples include:
 * A `user` has many `posts`
@@ -92,33 +109,33 @@ With these two tables, a **one-to-many relationship** has been formed: a person 
 * An `album` has many `songs`
 * Can you think of any more?
 
-We can illustrate the relationships between tables with an **entity relation diagram (ERD)**:
-
-![ERD with one to many and many to many relationships](./img/labeled-erd.png)
-
-> *created using https://dbdiagram.io/*
-
-Above, we've introduced a **many-to-many** relationship that is created using *three* tables: A student can be enrolled in many classes and a class can enroll many students.
-
-The `enrollments` table in the middle is called an **association/junction table** because its entries represent the association of two separate entities. An association/junction table consists entirely of foreign keys.
-
-**Q: Can you think of other many-to-many relationships in the apps you use?**
-
 ## Association SQL Queries
 
-**Setup**
+### Setup
+
+Use the following commands to quickly create the `people` and `pets` tables in a database of your choosing.
 
 ```sql
 DROP TABLE IF EXISTS people;
 DROP TABLE IF EXISTS pets;
 
-CREATE TABLE people (id SERIAL PRIMARY KEY, first_name TEXT, last_name TEXT);
-INSERT INTO people (name) VALUES ('Ann', 'Duong');
-INSERT INTO people (name) VALUES ('Reuben', 'Ogbonna');
-INSERT INTO people (name) VALUES ('Carmen', 'Salas');
-INSERT INTO people (name) VALUES ('Ben', 'Spector');
+CREATE TABLE people (
+	id SERIAL PRIMARY KEY,
+	name TEXT NOT NULL
+);
 
-CREATE TABLE pets (id SERIAL PRIMARY KEY, name TEXT, type TEXT, owner_id INTEGER);
+INSERT INTO people (name) VALUES ('Ann Duong');
+INSERT INTO people (name) VALUES ('Reuben Ogbonna');
+INSERT INTO people (name) VALUES ('Carmen Salas');
+INSERT INTO people (name) VALUES ('Ben Spector');
+
+CREATE TABLE pets (
+	id SERIAL PRIMARY KEY,
+	name TEXT NOT NULL, 
+	type TEXT NOT NULL, 
+	owner_id INTEGER REFERENCES people
+);
+
 INSERT INTO pets (name, type, owner_id) VALUES ('Khalo', 'dog', 3);
 INSERT INTO pets (name, type, owner_id) VALUES ('Juan Pablo', 'dog', 2);
 INSERT INTO pets (name, type, owner_id) VALUES ('Bora', 'bird', 1);
@@ -128,27 +145,42 @@ INSERT INTO pets (name, type, owner_id) VALUES ('Pon Juablo', 'cat', 2);
 INSERT INTO pets (name, type, owner_id) VALUES ('Kora', 'cat', 1);
 ```
 
-**Q: What is the primary key for each table? Are there any foreign keys?**
+* What is the primary key for each table? 
+* Are there any foreign keys?
+* How is the relationship between the two tables created using SQL?
 
-Now that we're set up, let's answer some questions! We'll start with a few simple ones
+### Some Questions To Answer
 
-- Who are the cats in our database?
-- How many cats are in our database?
+Now that we're set up, let's answer some questions! 
 
-Now let's try some harder ones:
+We'll start with a few simple ones. What SQL statements could we write to find out:
+- How many people are in our database?
+- What are the names of the cats in our database?
+- How many birds and dogs are in our database?
 
-- What are all the pets owned by Ann?
-- Who is the owner of Frida?
-- How many people own cats?
-- How many pets does Carmen have?
+**<details><summary style="color: purple">Answers</summary>**
+```sql
+SELECT COUNT(*)
+FROM people;
 
-In order to answer many of these questions, it will be helpful to use a `JOIN` 
+SELECT name
+FROM pets
+WHERE type = 'cat';
+
+SELECT COUNT(*)
+FROM pets
+WHERE type = 'dog' OR type = 'bird';
+```
+</details><br>
+
+Now let's try a harder one: What are the names of all the pets owned by Ann?
+
+In order to answer this question, it will be helpful to use a `JOIN` 
 
 ```sql
 SELECT * 
 FROM people 
-	JOIN pets 
-		ON people.person_id = pets.owner_id;
+	JOIN pets ON people.id = pets.owner_id;
 ```
 
 | person.id | name           | pet.id | name        | type | owner_id |
@@ -160,14 +192,53 @@ FROM people
 | 2         | Reuben Ogbonna | 6      | Pon  Juablo | cat  | 2        |
 | 3         | Carmen Salas   | 1      | Khalo       | dog  | 3        |
 | 3         | Maya Salas     | 5      | Frida       | cat  | 3        |
-| 4         | Ben Spector    | 5      | Frida       | cat  | 3        |
 
+We can modify our `SELECT` and add a `WHERE` clause to answer our question!
 
 ```sql
-SELECT * 
-	FROM people 
-JOIN pets 
-	ON people.id = pets.owner_id
-WHERE 
-	people.first_name = 'Ann';
+SELECT pets.name 
+FROM people 
+	JOIN pets ON people.id = pets.owner_id
+WHERE people.name = 'Ann Duong';
 ```
+
+**Let's see if we can answer some other questions:**
+- Who is the owner of Frida?
+- What are the names of the people who own cats?
+- How many pets does Carmen have?
+
+**<details><summary style="color: purple">Answers</summary>**
+
+```sql
+SELECT people.name
+FROM people 
+	JOIN pets ON people.id = pets.owner_id
+WHERE pets.name = 'Frida';
+
+SELECT people.name
+FROM people 
+	JOIN pets ON people.id = pets.owner_id
+WHERE pets.type = 'cat';
+
+SELECT COUNT(*)
+FROM people 
+	JOIN pets ON people.id = pets.owner_id
+WHERE	people.name = 'Carmen Salas';
+```
+
+</details><br>
+
+
+## Entity Relation Diagrams & Many To Many Relationships
+
+We can illustrate the relationships between tables with an **entity relation diagram (ERD)**:
+
+![ERD with one to many and many to many relationships](./img/labeled-erd.png)
+
+> *created using https://dbdiagram.io/*
+
+Above, we've introduced a **many-to-many** relationship that is created using *three* tables: *A student can be enrolled in many classes and a class can enroll many students.*
+
+The `enrollments` table in the middle is called an **association/junction table** because its records represent the association of two separate entities. An association/junction table can consist entirely of foreign keys.
+
+**Q: Can you think of other many-to-many relationships in the apps you use?**
