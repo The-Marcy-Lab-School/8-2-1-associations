@@ -116,8 +116,8 @@ With these two tables, a **one-to-many relationship** has been formed: a person 
 Use the following commands to quickly create the `people` and `pets` tables in a database of your choosing.
 
 ```sql
+DROP TABLE IF EXISTS pets; -- do this first because pets depends on people
 DROP TABLE IF EXISTS people;
-DROP TABLE IF EXISTS pets;
 
 CREATE TABLE people (
 	id SERIAL PRIMARY KEY,
