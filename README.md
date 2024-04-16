@@ -59,7 +59,7 @@ CREATE TABLE all_data (
 
 ## Two Tables and Foreign Keys
 
-Instead of storing all data in a single table, we can break up the table into two:
+Instead of storing all data in a single table, we can break up the table into two related tables:
 1. A `people` table to store data about people
 2. A `pets` table to store data about pets
    * The `pets` table has an `owner_id` column that *references* the **primary key** the `people` table.
