@@ -46,7 +46,7 @@ CREATE TABLE all_data (
 | --- | -------------- | ---------- | ---- |
 | 1   | Ann Duong      | Bora       | bird |
 | 2   | Ann Duong      | Tora       | dog  |
-| 3   | Ann Duong      | Kora       | cat  |
+| 3   | Ann Duong      | Kora       | dog  |
 | 4   | Ben Spector    |            |      |
 | 5   | Reuben Ogbonna | Juan Pablo | dog  |
 | 6   | Reuben Ogbonna | Pon Juablo | cat  |
@@ -95,7 +95,7 @@ CREATE TABLE pets (
 | 4   | Frida      | cat  | 3        |
 | 5   | Tora       | dog  | 1        |
 | 6   | Pon Juablo | cat  | 2        |
-| 7   | Kora       | cat  | 1        |
+| 7   | Kora       | dog  | 1        |
 
 
 **<details><summary style="color: purple">Q: What are the tradeoffs of this schema design?</summary>**
@@ -142,7 +142,7 @@ INSERT INTO pets (name, type, owner_id) VALUES ('Bora', 'bird', 1);
 INSERT INTO pets (name, type, owner_id) VALUES ('Tora', 'dog', 1);
 INSERT INTO pets (name, type, owner_id) VALUES ('Frida', 'cat', 3);
 INSERT INTO pets (name, type, owner_id) VALUES ('Pon Juablo', 'cat', 2);
-INSERT INTO pets (name, type, owner_id) VALUES ('Kora', 'cat', 1);
+INSERT INTO pets (name, type, owner_id) VALUES ('Kora', 'dog', 1);
 ```
 
 * What is the primary key for each table? 
@@ -187,7 +187,7 @@ FROM people
 | --------- | -------------- | ------ | ----------- | ---- | -------- |
 | 1         | Ann Duong      | 3      | Bora        | bird | 1        |
 | 1         | Ann Duong      | 4      | Tora        | dog  | 1        |
-| 1         | Ann Duong      | 7      | Kora        | cat  | 1        |
+| 1         | Ann Duong      | 7      | Kora        | dog  | 1        |
 | 2         | Reuben Ogbonna | 2      | Juan  Pablo | dog  | 2        |
 | 2         | Reuben Ogbonna | 6      | Pon  Juablo | cat  | 2        |
 | 3         | Carmen Salas   | 1      | Khalo       | dog  | 3        |
