@@ -1,8 +1,8 @@
 # Association Tables
 
-How you choose to design the tables of your database is called the **database schema** and it is a crucial step in planning your application. Think of it as the wireframe for your data.
+So, what makes Postgres a "relational" database management system? Relationships! 
 
-In this lesson, we'll learn about a few ways to organize your data and how to represent that organization through ERDs.
+In this lesson, we'll learn how we can establish relationships between tables using primary and foreign keys and how to manipulate related tables with SQL.
 
 **Table of Contents**
 - [Terms](#terms)
