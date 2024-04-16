@@ -1,8 +1,8 @@
 # Association Tables
 
-How you choose to design the tables of your database is called the **database schema** and it is a crucial step in planning your application. Think of it as the wireframe for your data.
+So, what makes Postgres a "relational" database management system? Relationships! 
 
-In this lesson, we'll learn about a few ways to organize your data and how to represent that organization through ERDs.
+In this lesson, we'll learn how we can establish relationships between tables using primary and foreign keys and how to manipulate related tables with SQL.
 
 **Table of Contents**
 - [Terms](#terms)
@@ -59,7 +59,7 @@ CREATE TABLE all_data (
 
 ## Two Tables and Foreign Keys
 
-Instead of storing all data in a single table, we can break up the table into two:
+Instead of storing all data in a single table, we can break up the table into two related tables:
 1. A `people` table to store data about people
 2. A `pets` table to store data about pets
    * The `pets` table has an `owner_id` column that *references* the **primary key** the `people` table.
